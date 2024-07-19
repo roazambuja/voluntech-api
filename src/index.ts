@@ -1,7 +1,7 @@
 import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
 import databaseConnection from "./database/connection";
-import router from "./routes/auth";
+import router from "./routes/routes";
 
 dotenv.config();
 
