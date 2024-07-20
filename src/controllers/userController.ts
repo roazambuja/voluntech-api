@@ -3,6 +3,7 @@ import { validationResult } from "express-validator";
 import UserModel from "../models/user";
 import bcrypt from "bcrypt";
 import OrganizationModel from "../models/organization";
+import { uploadToCloudinary } from "../services/cloudinary";
 
 const registerUser = async (req: Request, res: Response) => {
   try {
@@ -18,6 +19,11 @@ const registerUser = async (req: Request, res: Response) => {
 
     const { name, email, password, role, description, cause } = req.body;
 
+    let data;
+    if (req.file) {
+      data = await uploadToCloudinary(req.file.path, "profile-pictures");
+    }
+
     let user: any;
 
     if (role === "Organização") {
@@ -28,6 +34,10 @@ const registerUser = async (req: Request, res: Response) => {
         role,
         description,
         cause,
+        profilePicture: {
+          filePath: data?.url,
+          publicId: data?.public_id,
+        },
       });
     } else {
       user = new UserModel({
@@ -35,10 +45,14 @@ const registerUser = async (req: Request, res: Response) => {
         email,
         password,
         role,
+        profilePicture: {
+          filePath: data?.url,
+          publicId: data?.public_id,
+        },
       });
     }
-    user.password = await bcrypt.hash(password, 10);
 
+    user.password = await bcrypt.hash(password, 10);
     const userData = await user.save();
 
     return res.status(201).json({
