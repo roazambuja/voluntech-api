@@ -51,7 +51,7 @@ class UserController {
 
       return res.status(201).json({
         success: true,
-        message: "Usuário cadastrado com sucesso",
+        message: "Seu cadastro foi finalizado com sucesso!",
         data: newUser,
         address: savedAddress,
       });
