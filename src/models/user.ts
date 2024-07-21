@@ -10,7 +10,7 @@ const userSchema = new mongoose.Schema<User>(
       filePath: String,
       publicId: String,
     },
-    role: { type: String, required: true },
+    role: { type: String, enum: ["Organização", "Voluntário"], required: true },
   },
   { timestamps: { createdAt: "created_at", updatedAt: "updated_at" }, discriminatorKey: "role" }
 );
