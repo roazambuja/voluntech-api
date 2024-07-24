@@ -15,6 +15,17 @@ class UserController {
         return res.status(400).json({ success: false, message: "E-mail já cadastrado" });
       }
 
+      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+      if (!passwordRegex.test(password)) {
+        return res
+          .status(400)
+          .json({
+            success: false,
+            message:
+              "Sua senha deve ter no mínimo 8 caracteres, uma letra maiúscula, uma letra minúscula, um número e um caractere especial.",
+          });
+      }
+
       let data;
       if (req.file) {
         data = await uploadToCloudinary(req.file.path, "profile-pictures");
