@@ -10,13 +10,17 @@ class UserController {
     try {
       const { name, email, password, role, description, cause, cep, city, state } = req.body;
 
+      let findUser = await UserModel.findOne({ email });
+      if (findUser) {
+        return res.status(400).json({ success: false, message: "E-mail já cadastrado" });
+      }
+
       let data;
       if (req.file) {
         data = await uploadToCloudinary(req.file.path, "profile-pictures");
       }
 
       let user: any;
-
       if (role === "Organização") {
         user = new OrganizationModel({
           name,
