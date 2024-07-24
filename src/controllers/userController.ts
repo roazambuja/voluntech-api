@@ -10,37 +10,45 @@ class UserController {
     try {
       const { name, email, password, role, description, cause, cep, city, state } = req.body;
 
+      let findUser = await UserModel.findOne({ email });
+      if (findUser) {
+        return res.status(400).json({ success: false, message: "E-mail já cadastrado" });
+      }
+
+      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+      if (!passwordRegex.test(password)) {
+        return res.status(400).json({
+          success: false,
+          message:
+            "Sua senha deve ter no mínimo 8 caracteres, uma letra maiúscula, uma letra minúscula, um número e um caractere especial.",
+        });
+      }
+
       let data;
       if (req.file) {
         data = await uploadToCloudinary(req.file.path, "profile-pictures");
       }
 
       let user: any;
+      user = {
+        name,
+        email,
+        password,
+        role,
+        profilePicture: {
+          filePath: data?.url,
+          publicId: data?.public_id,
+        },
+      };
 
       if (role === "Organização") {
         user = new OrganizationModel({
-          name,
-          email,
-          password,
-          role,
-          description,
+          ...user,
           cause,
-          profilePicture: {
-            filePath: data?.url,
-            publicId: data?.public_id,
-          },
+          description,
         });
       } else {
-        user = new UserModel({
-          name,
-          email,
-          password,
-          role,
-          profilePicture: {
-            filePath: data?.url,
-            publicId: data?.public_id,
-          },
-        });
+        user = new UserModel({ ...user });
       }
 
       user.password = await bcrypt.hash(password, 10);
