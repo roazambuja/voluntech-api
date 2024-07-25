@@ -11,13 +11,13 @@ class AuthController {
       const user = await UserModel.findOne({ email: email });
 
       if (!user) {
-        return res.status(404).json({ success: false, message: "E-mail ou senha inválidos." });
+        return res.status(401).json({ success: false, message: "E-mail ou senha inválidos." });
       }
 
       const checkPassword = await bcrypt.compare(password, user.password);
 
       if (!checkPassword) {
-        return res.status(404).json({ success: false, message: "E-mail ou senha inválidos." });
+        return res.status(401).json({ success: false, message: "E-mail ou senha inválidos." });
       }
 
       try {
