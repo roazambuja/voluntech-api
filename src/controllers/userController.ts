@@ -70,6 +70,19 @@ class UserController {
       });
     }
   };
+
+  static getUser = async (req: Request, res: Response) => {
+    const id = req.params.id;
+    const user = await UserModel.findById(id, "-password");
+
+    if (!user) {
+      return res.status(400).json({ success: false, message: "Usuário não encontrado" });
+    }
+    return res.status(200).json({
+      success: true,
+      data: user,
+    });
+  };
 }
 
 export default UserController;
