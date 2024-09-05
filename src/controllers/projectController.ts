@@ -1,4 +1,4 @@
-import { Response } from "express";
+import { Response, Request } from "express";
 import { uploadToCloudinary } from "../services/cloudinary";
 import ProjectModel from "../models/project";
 import { AuthenticatedRequest } from "../middlewares/token";
@@ -37,6 +37,20 @@ class ProjectController {
           message: "Você não possui permissão para realizar essa ação!",
         });
       }
+    } catch (error: any) {
+      return res.status(400).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  };
+
+  static getUserProjects = async (req: Request, res: Response) => {
+    try {
+      const id = req.params.id;
+
+      const projects = await ProjectModel.find({ organization: id });
+      return res.status(200).json({ success: true, projects });
     } catch (error: any) {
       return res.status(400).json({
         success: false,
