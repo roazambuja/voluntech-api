@@ -58,6 +58,23 @@ class ProjectController {
       });
     }
   };
+
+  static getProject = async (req: Request, res: Response) => {
+    try {
+      const id = req.params.id;
+      const project = await ProjectModel.findOne({ _id: id }).populate("organization", "name");
+      if (project) {
+        return res.status(200).json({ success: true, project });
+      } else {
+        return res.status(400).json({ success: false, message: "O projeto não foi encontrado." });
+      }
+    } catch (error: any) {
+      return res.status(400).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  };
 }
 
 export default ProjectController;

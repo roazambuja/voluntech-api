@@ -7,5 +7,6 @@ const router = Router();
 
 export default [
   router.post("/", upload.single("headerPicture"), checkToken, ProjectController.registerProject),
+  router.get("/:id", checkToken, ProjectController.getProject),
   router.get("/user/:id", checkToken, ProjectController.getUserProjects),
 ];
