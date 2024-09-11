@@ -1,0 +1,8 @@
+import { Router } from "express";
+import checkToken from "../middlewares/token";
+import PixController from "../controllers/pixController";
+import { requireOrganization } from "../middlewares/requireOrganization";
+
+const router = Router();
+
+export default [router.post("/", checkToken, requireOrganization, PixController.registerPix)];
