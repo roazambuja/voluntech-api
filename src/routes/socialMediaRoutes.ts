@@ -7,4 +7,5 @@ const router = Router();
 
 export default [
   router.post("/", checkToken, requireOrganization, SocialMediaController.registerSocialMedia),
+  router.get("/user/:id", checkToken, SocialMediaController.getSocialMediaByUser),
 ];

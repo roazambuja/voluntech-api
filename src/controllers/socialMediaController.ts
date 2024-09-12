@@ -1,4 +1,4 @@
-import { Response } from "express";
+import { Response, Request } from "express";
 import { AuthenticatedRequest } from "../middlewares/requireOrganization";
 import SocialMediaModel from "../models/socialMedia";
 
@@ -28,6 +28,20 @@ class SocialMediaController {
         message: "Redes sociais cadastradas com sucesso!",
         socialMedia: newSocialMedia,
       });
+    } catch (error: any) {
+      return res.status(400).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  };
+
+  static getSocialMediaByUser = async (req: Request, res: Response) => {
+    try {
+      const id = req.params.id;
+
+      const socialMedia = await SocialMediaModel.findOne({ user: id });
+      return res.status(200).json({ success: true, socialMedia });
     } catch (error: any) {
       return res.status(400).json({
         success: false,
