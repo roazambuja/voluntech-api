@@ -1,4 +1,4 @@
-import { Response } from "express";
+import { Response, Request } from "express";
 import PixModel from "../models/pix";
 import { AuthenticatedRequest } from "../middlewares/requireOrganization";
 
@@ -22,6 +22,20 @@ class PixController {
         message: "Chave PIX cadastrada com sucesso!",
         pix: newPix,
       });
+    } catch (error: any) {
+      return res.status(400).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  };
+
+  static getPixByUser = async (req: Request, res: Response) => {
+    try {
+      const id = req.params.id;
+
+      const pix = await PixModel.findOne({ user: id });
+      return res.status(200).json({ success: true, pix });
     } catch (error: any) {
       return res.status(400).json({
         success: false,
