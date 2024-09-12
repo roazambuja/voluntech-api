@@ -5,4 +5,7 @@ import { requireOrganization } from "../middlewares/requireOrganization";
 
 const router = Router();
 
-export default [router.post("/", checkToken, requireOrganization, PixController.registerPix)];
+export default [
+  router.post("/", checkToken, requireOrganization, PixController.registerPix),
+  router.get("/user/:id", checkToken, PixController.getPixByUser),
+];
