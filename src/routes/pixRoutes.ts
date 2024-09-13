@@ -7,5 +7,6 @@ const router = Router();
 
 export default [
   router.post("/", checkToken, requireOrganization, PixController.registerPix),
+  router.get("/:id", checkToken, PixController.getPixById),
   router.get("/user/:id", checkToken, PixController.getPixByUser),
 ];
