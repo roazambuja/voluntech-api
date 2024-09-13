@@ -49,6 +49,20 @@ class SocialMediaController {
       });
     }
   };
+
+  static getSocialMediaById = async (req: Request, res: Response) => {
+    try {
+      const id = req.params.id;
+
+      const socialMedia = await SocialMediaModel.findOne({ _id: id });
+      return res.status(200).json({ success: true, socialMedia });
+    } catch (error: any) {
+      return res.status(400).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  };
 }
 
 export default SocialMediaController;
