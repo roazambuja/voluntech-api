@@ -43,6 +43,55 @@ class PixController {
       });
     }
   };
+
+  static getPixById = async (req: Request, res: Response) => {
+    try {
+      const id = req.params.id;
+
+      const pix = await PixModel.findOne({ _id: id });
+      return res.status(200).json({ success: true, pix });
+    } catch (error: any) {
+      return res.status(400).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  };
+
+  static updatePix = async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const id = req.params.id;
+      const { type, key, name, bank } = req.body;
+      const user = req.loggedUser;
+
+      console.log(id);
+
+      const pix = await PixModel.findOne({ _id: id, user: user?._id });
+      if (!pix) {
+        return res.status(404).json({
+          success: false,
+          message: "Chave PIX não encontrada ou você não tem permissão para editá-la.",
+        });
+      }
+
+      pix.type = type || pix.type;
+      pix.key = key || pix.key;
+      pix.name = name || pix.name;
+      pix.bank = bank || pix.bank;
+
+      const updatedPix = await pix.save();
+      return res.status(200).json({
+        success: true,
+        message: "Chave PIX atualizada com sucesso!",
+        pix: updatedPix,
+      });
+    } catch (error: any) {
+      return res.status(400).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  };
 }
 
 export default PixController;
