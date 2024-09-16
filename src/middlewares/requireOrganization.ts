@@ -1,11 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import UserModel from "../models/user";
-import { User } from "../entities/user";
-
-export interface AuthenticatedRequest extends Request {
-  loggedUser?: User;
-}
+import { AuthenticatedRequest } from "./token";
 
 export function requireOrganization(req: AuthenticatedRequest, res: Response, next: NextFunction) {
   try {
@@ -21,12 +17,9 @@ export function requireOrganization(req: AuthenticatedRequest, res: Response, ne
         }
 
         const user = await UserModel.findOne({ _id: decoded.user });
-
         if (!user) {
-          return res.status(404).json({ message: "Usuário não encontradoooooo." });
+          return res.status(404).json({ message: "Usuário não encontrado." });
         }
-
-        req.loggedUser = user;
 
         if (user.role !== "Organização") {
           return res
