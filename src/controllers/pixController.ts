@@ -1,6 +1,6 @@
 import { Response, Request } from "express";
 import PixModel from "../models/pix";
-import { AuthenticatedRequest } from "../middlewares/requireOrganization";
+import { AuthenticatedRequest } from "../middlewares/token";
 
 class PixController {
   static registerPix = async (req: AuthenticatedRequest, res: Response) => {
@@ -63,8 +63,6 @@ class PixController {
       const id = req.params.id;
       const { type, key, name, bank } = req.body;
       const user = req.loggedUser;
-
-      console.log(id);
 
       const pix = await PixModel.findOne({ _id: id, user: user?._id });
       if (!pix) {

@@ -8,4 +8,5 @@ const router = Router();
 export default [
   router.post("/", upload.single("profilePicture"), UserController.registerUser),
   router.get("/:id", checkToken, UserController.getUser),
+  router.get("/", checkToken, UserController.getLoggedUser),
 ];

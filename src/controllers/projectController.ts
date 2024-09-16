@@ -1,7 +1,7 @@
 import { Response, Request } from "express";
 import { uploadToCloudinary } from "../services/cloudinary";
 import ProjectModel from "../models/project";
-import { AuthenticatedRequest } from "../middlewares/requireOrganization";
+import { AuthenticatedRequest } from "../middlewares/token";
 
 class ProjectController {
   static registerProject = async (req: AuthenticatedRequest, res: Response) => {

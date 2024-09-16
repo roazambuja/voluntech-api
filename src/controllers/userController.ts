@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import OrganizationModel from "../models/organization";
 import { uploadToCloudinary } from "../services/cloudinary";
 import AddressModel from "../models/address";
+import { AuthenticatedRequest } from "../middlewares/token";
 
 class UserController {
   static registerUser = async (req: Request, res: Response) => {
@@ -81,6 +82,18 @@ class UserController {
     return res.status(200).json({
       success: true,
       data: user,
+    });
+  };
+
+  static getLoggedUser = async (req: AuthenticatedRequest, res: Response) => {
+    const user = req.loggedUser;
+
+    if (!user) {
+      return res.status(400).json({ success: false, message: "Usuário não encontrado" });
+    }
+    return res.status(200).json({
+      success: true,
+      user,
     });
   };
 }

@@ -1,6 +1,6 @@
 import { Response, Request } from "express";
-import { AuthenticatedRequest } from "../middlewares/requireOrganization";
 import SocialMediaModel from "../models/socialMedia";
+import { AuthenticatedRequest } from "../middlewares/token";
 
 class SocialMediaController {
   static registerSocialMedia = async (req: AuthenticatedRequest, res: Response) => {
