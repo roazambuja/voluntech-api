@@ -66,11 +66,30 @@ class SocialMediaController {
 
   static updateSocialMedia = async (req: AuthenticatedRequest, res: Response) => {
     try {
+      const updateData: any = {};
+      const unsetData: any = {};
       const id = req.params.id;
       const { whatsapp, instagram, facebook, tiktok } = req.body;
       const user = req.loggedUser;
 
-      const socialMedia = await SocialMediaModel.findOne({ _id: id, user: user?._id });
+      whatsapp === "" || !whatsapp ? (unsetData.whatsapp = "") : (updateData.whatsapp = whatsapp);
+      instagram === "" || !instagram
+        ? (unsetData.instagram = "")
+        : (updateData.instagram = instagram);
+      facebook === "" || !facebook ? (unsetData.facebook = "") : (updateData.facebook = facebook);
+      tiktok === "" || !tiktok ? (unsetData.tiktok = "") : (updateData.tiktok = tiktok);
+
+      const socialMedia = await SocialMediaModel.findOneAndUpdate(
+        { _id: id, user: user?._id },
+        {
+          $set: updateData,
+          $unset: unsetData,
+        },
+        {
+          new: true,
+        }
+      );
+
       if (!socialMedia) {
         return res.status(404).json({
           success: false,
@@ -78,16 +97,10 @@ class SocialMediaController {
         });
       }
 
-      socialMedia.instagram = instagram || socialMedia.instagram;
-      socialMedia.whatsapp = whatsapp || socialMedia.whatsapp;
-      socialMedia.facebook = facebook || socialMedia.facebook;
-      socialMedia.tiktok = tiktok || socialMedia.tiktok;
-
-      const updatedSocialMedia = await socialMedia.save();
       return res.status(200).json({
         success: true,
         message: "Redes sociais atualizadas com sucesso!",
-        socialMedia: updatedSocialMedia,
+        socialMedia: socialMedia,
       });
     } catch (error: any) {
       return res.status(400).json({
