@@ -5,6 +5,7 @@ import addressRoutes from "./addressRoutes";
 import projectRoutes from "./projectRoutes";
 import pixRoutes from "./pixRoutes";
 import socialMediaRoutes from "./socialMediaRoutes";
+import volunteeringRoutes from "./volunteeringRoutes";
 
 const router: IRouter = Router();
 
@@ -14,5 +15,6 @@ router.use("/address", addressRoutes);
 router.use("/projects", projectRoutes);
 router.use("/pix", pixRoutes);
 router.use("/social-media", socialMediaRoutes);
+router.use("/volunteering", volunteeringRoutes);
 
 export default router;
