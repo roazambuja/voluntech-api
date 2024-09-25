@@ -7,4 +7,5 @@ const router = Router();
 
 export default [
   router.post("/", checkToken, requireOrganization, VolunteeringController.createVolunteering),
+  router.get("/project/:id", checkToken, VolunteeringController.getVolunteeringByProject),
 ];

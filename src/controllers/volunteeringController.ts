@@ -1,4 +1,4 @@
-import { Response } from "express";
+import { Request, Response } from "express";
 import VolunteeringModel from "../models/volunteering";
 import { AuthenticatedRequest } from "../middlewares/token";
 import ProjectModel from "../models/project";
@@ -32,6 +32,20 @@ class VolunteeringController {
       return res
         .status(200)
         .json({ success: true, message: "Voluntariado cadastrado com sucesso!", newVolunteering });
+    } catch (error: any) {
+      return res.status(400).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  };
+
+  static getVolunteeringByProject = async (req: Request, res: Response) => {
+    try {
+      const id = req.params.id;
+
+      const volunteering = await VolunteeringModel.find({ project: id });
+      return res.status(200).json({ success: true, volunteering });
     } catch (error: any) {
       return res.status(400).json({
         success: false,
