@@ -53,6 +53,23 @@ class VolunteeringController {
       });
     }
   };
+
+  static getVolunteeringById = async (req: Request, res: Response) => {
+    try {
+      const id = req.params.id;
+
+      const volunteering = await VolunteeringModel.findOne({ _id: id }).populate(
+        "project",
+        "_id title"
+      );
+      return res.status(200).json({ success: true, volunteering });
+    } catch (error: any) {
+      return res.status(400).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  };
 }
 
 export default VolunteeringController;
