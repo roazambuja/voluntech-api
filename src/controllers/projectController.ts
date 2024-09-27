@@ -46,7 +46,7 @@ class ProjectController {
     try {
       const id = req.params.id;
 
-      const projects = await ProjectModel.find({ organization: id });
+      const projects = await ProjectModel.find({ organization: id }).sort({ _id: -1 });
       return res.status(200).json({ success: true, projects });
     } catch (error: any) {
       return res.status(400).json({
