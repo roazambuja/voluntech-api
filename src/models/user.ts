@@ -13,7 +13,7 @@ const userSchema = new mongoose.Schema<User>(
         message: "O email digitado não é um email válido!",
       },
     },
-    password: { type: String, required: true },
+    password: { type: String, required: true, select: false },
     profilePicture: {
       filePath: String,
       publicId: String,
