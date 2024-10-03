@@ -8,7 +8,7 @@ class AuthController {
     try {
       const { email, password } = req.body;
 
-      const user = await UserModel.findOne({ email: email });
+      const user = await UserModel.findOne({ email: email }).select("+password");
       if (!user) {
         return res.status(401).json({ success: false, message: "E-mail ou senha inválidos." });
       }
