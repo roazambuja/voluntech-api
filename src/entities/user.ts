@@ -11,3 +11,8 @@ export interface User {
     publicId: string;
   };
 }
+
+export interface Organization extends User {
+  cause: string;
+  description: string;
+}
