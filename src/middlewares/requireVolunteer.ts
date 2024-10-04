@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import UserModel from "../models/user";
 import { AuthenticatedRequest } from "./token";
 
-export function requireOrganization(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+function requireVolunteer(req: AuthenticatedRequest, res: Response, next: NextFunction) {
   try {
     const authHeader = req.headers["authorization"];
     const token = authHeader && authHeader.split(" ")[1];
@@ -21,10 +21,10 @@ export function requireOrganization(req: AuthenticatedRequest, res: Response, ne
           return res.status(404).json({ message: "Usuário não encontrado." });
         }
 
-        if (user.role !== "Organização") {
+        if (user.role !== "Voluntário") {
           return res
             .status(403)
-            .json({ message: "Acesso negado! Apenas organizações podem realizar essa ação." });
+            .json({ message: "Acesso negado! Apenas voluntários podem realizar essa ação." });
         }
 
         next();
@@ -33,3 +33,5 @@ export function requireOrganization(req: AuthenticatedRequest, res: Response, ne
     return res.status(500).json({ message: "Erro no servidor." });
   }
 }
+
+export default requireVolunteer;

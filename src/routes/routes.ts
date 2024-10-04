@@ -7,6 +7,7 @@ import pixRoutes from "./pixRoutes";
 import socialMediaRoutes from "./socialMediaRoutes";
 import volunteeringRoutes from "./volunteeringRoutes";
 import searchRoutes from "./searchRoutes";
+import followRoutes from "./followRoutes";
 
 const router: IRouter = Router();
 
@@ -18,5 +19,6 @@ router.use("/pix", pixRoutes);
 router.use("/social-media", socialMediaRoutes);
 router.use("/volunteering", volunteeringRoutes);
 router.use("/search", searchRoutes);
+router.use("/follow", followRoutes);
 
 export default router;
