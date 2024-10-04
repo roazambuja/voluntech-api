@@ -7,4 +7,5 @@ const router = Router();
 
 export default [
   router.post("/", checkToken, requireVolunteer, FollowController.followOrganization),
+  router.get("/:organization", checkToken, requireVolunteer, FollowController.alreadyFollows),
 ];

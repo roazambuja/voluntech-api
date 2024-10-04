@@ -34,6 +34,29 @@ class FollowController {
       });
     }
   };
+
+  static alreadyFollows = async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const { organization } = req.params;
+      const user = req.loggedUser;
+
+      if (!user) {
+        return res.status(400).json({ success: false, message: "Usuário não encontrado." });
+      }
+
+      const alreadyFollows = await FollowModel.findOne({ user: user, organization: organization });
+
+      return res.status(200).json({
+        success: true,
+        follows: alreadyFollows ? true : false,
+      });
+    } catch (error: any) {
+      return res.status(400).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  };
 }
 
 export default FollowController;
