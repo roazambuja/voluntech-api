@@ -8,6 +8,7 @@ import socialMediaRoutes from "./socialMediaRoutes";
 import volunteeringRoutes from "./volunteeringRoutes";
 import searchRoutes from "./searchRoutes";
 import followRoutes from "./followRoutes";
+import updatesRoutes from "./updatesRoutes";
 
 const router: IRouter = Router();
 
@@ -20,5 +21,6 @@ router.use("/social-media", socialMediaRoutes);
 router.use("/volunteering", volunteeringRoutes);
 router.use("/search", searchRoutes);
 router.use("/follow", followRoutes);
+router.use("/updates", updatesRoutes);
 
 export default router;
