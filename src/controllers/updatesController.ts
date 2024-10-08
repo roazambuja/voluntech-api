@@ -31,7 +31,12 @@ class UpdatesController {
       const volunteerings = await VolunteeringModel.find({
         project: { $in: projectIds },
       })
-        .populate("project")
+        .populate({
+          path: "project",
+          populate: {
+            path: "organization",
+          },
+        })
         .lean();
 
       const labeledProjects = projects.map((project) => ({
