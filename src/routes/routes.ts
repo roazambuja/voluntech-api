@@ -9,6 +9,7 @@ import volunteeringRoutes from "./volunteeringRoutes";
 import searchRoutes from "./searchRoutes";
 import followRoutes from "./followRoutes";
 import updatesRoutes from "./updatesRoutes";
+import participationRoutes from "./participationRoutes";
 
 const router: IRouter = Router();
 
@@ -22,5 +23,6 @@ router.use("/volunteering", volunteeringRoutes);
 router.use("/search", searchRoutes);
 router.use("/follow", followRoutes);
 router.use("/updates", updatesRoutes);
+router.use("/participation", participationRoutes);
 
 export default router;
