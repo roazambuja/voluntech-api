@@ -28,7 +28,7 @@ class ParticipationController {
       const newParticipation = new ParticipationModel({
         user: user._id,
         volunteering: volunteeringId,
-        confirmed: false,
+        status: "pending",
       });
 
       await newParticipation.save();
@@ -57,7 +57,7 @@ class ParticipationController {
       return res.status(200).json({
         success: true,
         participates: alreadyParticipates ? true : false,
-        confirmed: alreadyParticipates ? alreadyParticipates.confirmed : false,
+        status: alreadyParticipates?.status,
       });
     } catch (error: any) {
       return res.status(400).json({

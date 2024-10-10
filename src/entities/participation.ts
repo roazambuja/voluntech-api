@@ -4,5 +4,5 @@ import { Volunteering } from "./volunteering";
 export interface Participation {
   user: User;
   volunteering: Volunteering;
-  confirmed: boolean;
+  status: "pending" | "confirmed" | "rejected";
 }
