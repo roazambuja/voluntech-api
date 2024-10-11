@@ -2,6 +2,7 @@ import { Router } from "express";
 import checkToken from "../middlewares/token";
 import requireVolunteer from "../middlewares/requireVolunteer";
 import ParticipationController from "../controllers/participationController";
+import { requireOrganization } from "../middlewares/requireOrganization";
 
 const router = Router();
 
@@ -13,4 +14,11 @@ export default [
     requireVolunteer,
     ParticipationController.alreadyParticipates
   ),
+  router.put(
+    "/:id",
+    checkToken,
+    requireOrganization,
+    ParticipationController.answerParticipationRequest
+  ),
+  router.get("/", checkToken, requireOrganization, ParticipationController.getPendingRequests),
 ];
