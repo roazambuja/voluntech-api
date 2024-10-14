@@ -140,6 +140,50 @@ class ParticipationController {
       });
     }
   };
+
+  static getProjectParticipation = async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const { id: projectId } = req.params;
+      const user = req.loggedUser;
+
+      if (!user) {
+        return res.status(400).json({ success: false, message: "Usuário não encontrado." });
+      }
+
+      const project = await ProjectModel.findById(projectId);
+      if (!project) {
+        return res.status(404).json({ success: false, message: "Projeto não encontrado." });
+      }
+
+      const volunteerings = await VolunteeringModel.find({ project: projectId });
+      if (!volunteerings.length) {
+        return res
+          .status(404)
+          .json({ success: false, message: "Nenhum voluntariado encontrado para este projeto." });
+      }
+
+      const participation = await ParticipationModel.findOne({
+        volunteering: { $in: volunteerings.map((v) => v._id) },
+        user: user._id,
+        status: "confirmed",
+      });
+
+      if (!participation) {
+        return res.status(403).json({
+          success: false,
+          message:
+            "Você não tem permissão para interagir com este projeto, pois não está participando de nenhum voluntariado ou sua participação não foi confirmada.",
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        participates: true,
+      });
+    } catch (error: any) {
+      return res.status(500).json({ success: false, message: error.message });
+    }
+  };
 }
 
 export default ParticipationController;

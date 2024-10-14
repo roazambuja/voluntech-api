@@ -21,4 +21,5 @@ export default [
     ParticipationController.answerParticipationRequest
   ),
   router.get("/", checkToken, requireOrganization, ParticipationController.getPendingRequests),
+  router.get("/project/:id", checkToken, ParticipationController.getProjectParticipation),
 ];
