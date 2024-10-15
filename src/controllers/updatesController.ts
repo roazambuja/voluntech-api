@@ -3,6 +3,7 @@ import FollowModel from "../models/follow";
 import ProjectModel from "../models/project";
 import VolunteeringModel from "../models/volunteering";
 import { AuthenticatedRequest } from "../middlewares/token";
+import PostModel from "../models/post";
 
 class UpdatesController {
   static getFollowedUpdates = async (req: AuthenticatedRequest, res: Response) => {
@@ -39,6 +40,17 @@ class UpdatesController {
         })
         .lean();
 
+      const posts = await PostModel.find({
+        project: { $in: projectIds },
+      })
+        .populate({
+          path: "project",
+          populate: {
+            path: "organization",
+          },
+        })
+        .lean();
+
       const labeledProjects = projects.map((project) => ({
         ...project,
         type: "project",
@@ -49,8 +61,12 @@ class UpdatesController {
         type: "volunteering",
       }));
 
-      const combinedUpdates = [...labeledProjects, ...labeledVolunteerings];
+      const labeledPosts = posts.map((post) => ({
+        ...post,
+        type: "post",
+      }));
 
+      const combinedUpdates = [...labeledProjects, ...labeledVolunteerings, ...labeledPosts];
       combinedUpdates.sort((a, b) => (a._id < b._id ? 1 : -1));
 
       const totalItems = combinedUpdates.length;
