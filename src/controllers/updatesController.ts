@@ -45,10 +45,8 @@ class UpdatesController {
       })
         .populate({
           path: "project",
-          populate: {
-            path: "organization",
-          },
         })
+        .populate({ path: "user" })
         .lean();
 
       const labeledProjects = projects.map((project) => ({
