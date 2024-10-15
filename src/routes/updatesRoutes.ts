@@ -4,4 +4,7 @@ import UpdatesController from "../controllers/updatesController";
 
 const router = Router();
 
-export default [router.get("/", checkToken, UpdatesController.getFollowedUpdates)];
+export default [
+  router.get("/", checkToken, UpdatesController.getFollowedUpdates),
+  router.get("/project/:id", checkToken, UpdatesController.getProjectUpdates),
+];

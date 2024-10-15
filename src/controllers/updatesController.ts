@@ -45,10 +45,8 @@ class UpdatesController {
       })
         .populate({
           path: "project",
-          populate: {
-            path: "organization",
-          },
         })
+        .populate({ path: "user" })
         .lean();
 
       const labeledProjects = projects.map((project) => ({
@@ -67,6 +65,73 @@ class UpdatesController {
       }));
 
       const combinedUpdates = [...labeledProjects, ...labeledVolunteerings, ...labeledPosts];
+      combinedUpdates.sort((a, b) => (a._id < b._id ? 1 : -1));
+
+      const totalItems = combinedUpdates.length;
+      const paginatedUpdates = combinedUpdates.slice(
+        (pageNumber - 1) * pageLimit,
+        pageNumber * pageLimit
+      );
+
+      return res.status(200).json({
+        success: true,
+        data: paginatedUpdates,
+        pagination: {
+          totalItems,
+          totalPages: Math.ceil(totalItems / pageLimit),
+          currentPage: pageNumber,
+          pageLimit,
+        },
+      });
+    } catch (error: any) {
+      return res.status(500).json({ success: false, message: error.message });
+    }
+  };
+
+  static getProjectUpdates = async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const { id: projectId } = req.params;
+      const { page = 1, limit = 30 } = req.query;
+      const pageNumber = parseInt(page as string, 10) || 1;
+      const pageLimit = parseInt(limit as string, 10) || 10;
+
+      const user = req.loggedUser;
+      if (!user) {
+        return res.status(400).json({ success: false, message: "Usuário não encontrado." });
+      }
+
+      const project = await ProjectModel.findById(projectId).lean();
+      if (!project) {
+        return res.status(400).json({ success: false, message: "Projeto não encontrado." });
+      }
+
+      const volunteerings = await VolunteeringModel.find({ project: projectId })
+        .populate({
+          path: "project",
+          populate: {
+            path: "organization",
+          },
+        })
+        .lean();
+
+      const posts = await PostModel.find({ project: projectId })
+        .populate({
+          path: "project",
+        })
+        .populate({ path: "user" })
+        .lean();
+
+      const labeledVolunteerings = volunteerings.map((volunteering) => ({
+        ...volunteering,
+        type: "volunteering",
+      }));
+
+      const labeledPosts = posts.map((post) => ({
+        ...post,
+        type: "post",
+      }));
+
+      const combinedUpdates = [...labeledVolunteerings, ...labeledPosts];
       combinedUpdates.sort((a, b) => (a._id < b._id ? 1 : -1));
 
       const totalItems = combinedUpdates.length;
