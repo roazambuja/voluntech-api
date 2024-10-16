@@ -104,17 +104,34 @@ class PostController {
   static getUserPosts = async (req: Request, res: Response) => {
     try {
       const { id: userId } = req.params;
+      const { page = 1, limit = 30 } = req.query;
+      const pageNumber = parseInt(page as string, 10) || 1;
+      const pageLimit = parseInt(limit as string, 10) || 10;
 
+      // Verificar se o usuário existe
       const user = await UserModel.findById(userId);
       if (!user) {
         return res.status(400).json({ success: false, message: "Usuário não encontrado." });
       }
 
-      const posts = await PostModel.find({ user: userId }).populate("user project");
+      // Contar o total de posts
+      const totalItems = await PostModel.countDocuments({ user: userId });
 
-      return res.status(201).json({
+      // Aplicar paginação diretamente na consulta
+      const posts = await PostModel.find({ user: userId })
+        .populate("user project")
+        .skip((pageNumber - 1) * pageLimit) // Pular os itens das páginas anteriores
+        .limit(pageLimit); // Limitar o número de itens retornados
+
+      return res.status(200).json({
         success: true,
         data: posts,
+        pagination: {
+          totalItems,
+          totalPages: Math.ceil(totalItems / pageLimit),
+          currentPage: pageNumber,
+          pageLimit,
+        },
       });
     } catch (error: any) {
       return res.status(500).json({
