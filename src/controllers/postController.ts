@@ -1,10 +1,11 @@
-import { Response } from "express";
+import { Response, Request } from "express";
 import PostModel from "../models/post";
 import { AuthenticatedRequest } from "../middlewares/token";
 import { uploadToCloudinary } from "../services/cloudinary";
 import ProjectModel from "../models/project";
 import VolunteeringModel from "../models/volunteering";
 import ParticipationModel from "../models/participation";
+import UserModel from "../models/user";
 
 class PostController {
   static createPost = async (req: AuthenticatedRequest, res: Response) => {
@@ -91,6 +92,29 @@ class PostController {
         success: true,
         message: "Post criado com sucesso.",
         data: newPost,
+      });
+    } catch (error: any) {
+      return res.status(500).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  };
+
+  static getUserPosts = async (req: Request, res: Response) => {
+    try {
+      const { id: userId } = req.params;
+
+      const user = await UserModel.findById(userId);
+      if (!user) {
+        return res.status(400).json({ success: false, message: "Usuário não encontrado." });
+      }
+
+      const posts = await PostModel.find({ user: userId }).populate("user project");
+
+      return res.status(201).json({
+        success: true,
+        data: posts,
       });
     } catch (error: any) {
       return res.status(500).json({

@@ -5,4 +5,7 @@ import { upload } from "../middlewares/upload";
 
 const router = Router();
 
-export default [router.post("/", upload.array("pictures"), checkToken, PostController.createPost)];
+export default [
+  router.post("/", upload.array("pictures"), checkToken, PostController.createPost),
+  router.get("/user/:id", checkToken, PostController.getUserPosts),
+];
