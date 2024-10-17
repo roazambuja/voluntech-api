@@ -7,4 +7,5 @@ const router = Router();
 export default [
   router.get("/", checkToken, UpdatesController.getFollowedUpdates),
   router.get("/project/:id", checkToken, UpdatesController.getProjectUpdates),
+  router.get("/organization/:id", checkToken, UpdatesController.getOrganizationUpdates),
 ];
