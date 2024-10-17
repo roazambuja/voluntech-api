@@ -200,6 +200,82 @@ class UpdatesController {
       return res.status(500).json({ success: false, message: error.message });
     }
   };
+
+  static getOrganizationUpdates = async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const { id: organizationId } = req.params;
+      const { page = 1, limit = 30 } = req.query;
+      const pageNumber = parseInt(page as string, 10) || 1;
+      const pageLimit = parseInt(limit as string, 10) || 10;
+
+      const organization = await OrganizationModel.findById(organizationId);
+      if (!organization) {
+        return res.status(404).json({ success: false, message: "Organização não encontrada." });
+      }
+
+      const projects = await ProjectModel.find({ organization: organization._id })
+        .populate("organization")
+        .lean();
+
+      const projectIds = projects.map((project) => project._id);
+      const volunteerings = await VolunteeringModel.find({ project: { $in: projectIds } })
+        .populate({
+          path: "project",
+          populate: {
+            path: "organization",
+          },
+        })
+        .lean();
+
+      const posts = await PostModel.find({
+        project: { $in: projectIds },
+        user: organization._id,
+      })
+        .populate({ path: "project" })
+        .populate({ path: "user" })
+        .lean();
+
+      const labeledProjects = projects.map((project) => ({
+        ...project,
+        type: "project",
+      }));
+
+      const labeledVolunteerings = volunteerings.map((volunteering) => ({
+        ...volunteering,
+        type: "volunteering",
+      }));
+
+      const labeledPosts = posts.map((post) => ({
+        ...post,
+        type: "post",
+      }));
+
+      const combinedUpdates = [...labeledProjects, ...labeledVolunteerings, ...labeledPosts];
+      combinedUpdates.sort((a, b) => (a._id < b._id ? 1 : -1));
+
+      const totalItems = combinedUpdates.length;
+      const paginatedUpdates = combinedUpdates.slice(
+        (pageNumber - 1) * pageLimit,
+        pageNumber * pageLimit
+      );
+
+      return res.status(200).json({
+        success: true,
+        data: paginatedUpdates,
+        pagination: {
+          totalItems,
+          totalPages: Math.ceil(totalItems / pageLimit),
+          currentPage: pageNumber,
+          pageLimit,
+        },
+      });
+    } catch (error: any) {
+      return res.status(500).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  };
 }
 
 export default UpdatesController;
