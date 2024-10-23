@@ -14,6 +14,6 @@ export default [
     requireOrganization,
     ProjectController.registerProject
   ),
-  router.get("/:id", checkToken, ProjectController.getProject),
-  router.get("/user/:id", checkToken, ProjectController.getUserProjects),
+  router.get("/:id", ProjectController.getProject),
+  router.get("/user/:id", ProjectController.getUserProjects),
 ];

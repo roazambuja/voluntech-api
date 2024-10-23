@@ -134,17 +134,12 @@ class UpdatesController {
     }
   };
 
-  static getProjectUpdates = async (req: AuthenticatedRequest, res: Response) => {
+  static getProjectUpdates = async (req: Request, res: Response) => {
     try {
       const { id: projectId } = req.params;
       const { page = 1, limit = 30 } = req.query;
       const pageNumber = parseInt(page as string, 10) || 1;
       const pageLimit = parseInt(limit as string, 10) || 10;
-
-      const user = req.loggedUser;
-      if (!user) {
-        return res.status(400).json({ success: false, message: "Usuário não encontrado." });
-      }
 
       const project = await ProjectModel.findById(projectId).lean();
       if (!project) {
