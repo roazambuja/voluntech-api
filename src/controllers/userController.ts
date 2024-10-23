@@ -30,6 +30,28 @@ class UserController {
         data = await uploadToCloudinary(req.file.path, "profile-pictures");
       }
 
+      const causeToGoalsMap: { [key: string]: string[] } = {
+        "Apoio a Pessoas com Deficiência": ["Redução das Desigualdades"],
+        "Combate à pobreza": ["Erradicação da Pobreza"],
+        "Comunidade LGBTQIA+": ["Redução das Desigualdades"],
+        "Defesa dos animais": ["Vida Terrestre"],
+        "Direitos das Crianças e Adolescentes": [
+          "Paz, Justiça e Instituições Eficazes",
+          "Educação de Qualidade",
+        ],
+        "Direitos dos idosos": ["Redução das Desigualdades", "Saúde e Bem-Estar"],
+        Educação: ["Educação de Qualidade"],
+        "Igualdade de Gênero": ["Igualdade de Gênero"],
+        "Promoção da Cultura": ["Cidades e Comunidades Sustentáveis"],
+        "Proteção Ambiental": [
+          "Ação Contra a Mudança Global do Clima",
+          "Vida na Água",
+          "Vida Terrestre",
+        ],
+        Saúde: ["Saúde e Bem-Estar"],
+        "Segurança Alimentar": ["Fome Zero e Agricultura Sustentável"],
+      };
+
       let user: any;
       user = {
         name,
@@ -43,10 +65,12 @@ class UserController {
       };
 
       if (role === "Organização") {
+        const developmentGoals = causeToGoalsMap[cause] || [];
         user = new OrganizationModel({
           ...user,
           cause,
           description,
+          developmentGoals,
         });
       } else {
         user = new UserModel({ ...user });
