@@ -8,6 +8,6 @@ const router = Router();
 export default [
   router.post("/", checkToken, requireOrganization, PixController.registerPix),
   router.get("/:id", checkToken, PixController.getPixById),
-  router.get("/user/:id", checkToken, PixController.getPixByUser),
+  router.get("/user/:id", PixController.getPixByUser),
   router.put("/:id", checkToken, requireOrganization, PixController.updatePix),
 ];
