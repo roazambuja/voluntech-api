@@ -78,11 +78,20 @@ class ParticipationController {
         return res.status(400).json({ success: false, message: "Usuário não encontrado." });
       }
 
-      const participation = await ParticipationModel.findOneAndUpdate(
-        { _id: id },
-        { status },
-        { new: true }
-      );
+      let participation;
+      if (user.role === "Organização") {
+        participation = await ParticipationModel.findOneAndUpdate(
+          { _id: id },
+          { status },
+          { new: true }
+        );
+      } else {
+        participation = await ParticipationModel.findOneAndUpdate(
+          { _id: id },
+          { seen: true },
+          { new: true }
+        );
+      }
 
       if (!participation) {
         return res.status(400).json({ success: false, message: "Voluntariado não encontrado." });
@@ -100,7 +109,7 @@ class ParticipationController {
     }
   };
 
-  static getPendingRequests = async (req: AuthenticatedRequest, res: Response) => {
+  static getNotifications = async (req: AuthenticatedRequest, res: Response) => {
     try {
       const user = req.loggedUser;
 
@@ -108,26 +117,44 @@ class ParticipationController {
         return res.status(400).json({ success: false, message: "Usuário não encontrado." });
       }
 
-      const projects = await ProjectModel.find({ organization: user._id }).select("_id");
-      const projectIds = projects.map((project) => project._id);
+      let participations;
 
-      const volunteerings = await VolunteeringModel.find({ project: { $in: projectIds } }).select(
-        "_id"
-      );
-      const volunteeringIds = volunteerings.map((volunteering) => volunteering._id);
+      if (user.role === "Organização") {
+        const projects = await ProjectModel.find({ organization: user._id }).select("_id");
+        const projectIds = projects.map((project) => project._id);
 
-      const participations = await ParticipationModel.find({
-        volunteering: { $in: volunteeringIds },
-        status: "pending",
-      })
-        .populate("user", "name _id profilePicture")
-        .populate({
-          path: "volunteering",
-          populate: {
-            path: "project",
-          },
+        const volunteerings = await VolunteeringModel.find({ project: { $in: projectIds } }).select(
+          "_id"
+        );
+        const volunteeringIds = volunteerings.map((volunteering) => volunteering._id);
+
+        participations = await ParticipationModel.find({
+          volunteering: { $in: volunteeringIds },
+          status: "pending",
         })
-        .sort({ _id: -1 });
+          .populate("user", "name _id profilePicture")
+          .populate({
+            path: "volunteering",
+            populate: {
+              path: "project",
+            },
+          })
+          .sort({ _id: -1 });
+      } else {
+        participations = await ParticipationModel.find({
+          user: user._id,
+          status: { $in: ["confirmed", "rejected"] },
+          seen: false,
+        })
+          .populate({
+            path: "volunteering",
+            populate: {
+              path: "project",
+              populate: "organization",
+            },
+          })
+          .sort({ _id: -1 });
+      }
 
       return res.status(200).json({
         success: true,
