@@ -8,6 +8,6 @@ const router = Router();
 export default [
   router.post("/", checkToken, requireOrganization, SocialMediaController.registerSocialMedia),
   router.get("/:id", checkToken, SocialMediaController.getSocialMediaById),
-  router.get("/user/:id", checkToken, SocialMediaController.getSocialMediaByUser),
+  router.get("/user/:id", SocialMediaController.getSocialMediaByUser),
   router.put("/:id", checkToken, requireOrganization, SocialMediaController.updateSocialMedia),
 ];
