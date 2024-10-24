@@ -14,12 +14,7 @@ export default [
     requireVolunteer,
     ParticipationController.alreadyParticipates
   ),
-  router.put(
-    "/:id",
-    checkToken,
-    requireOrganization,
-    ParticipationController.answerParticipationRequest
-  ),
-  router.get("/", checkToken, requireOrganization, ParticipationController.getPendingRequests),
+  router.put("/:id", checkToken, ParticipationController.answerParticipationRequest),
+  router.get("/", checkToken, ParticipationController.getNotifications),
   router.get("/project/:id", checkToken, ParticipationController.getProjectParticipation),
 ];
