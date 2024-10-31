@@ -4,4 +4,7 @@ import MessageController from "../controllers/messageController";
 
 const router = Router();
 
-export default [router.post("/", checkToken, MessageController.sendMessage)];
+export default [
+  router.post("/", checkToken, MessageController.sendMessage),
+  router.get("/:id", checkToken, MessageController.getMessages),
+];
