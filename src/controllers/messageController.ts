@@ -65,22 +65,41 @@ export default class MessageController {
       }
 
       const userIds = await MessageModel.aggregate([
+        { $match: { $or: [{ from: loggedUser._id }, { to: loggedUser._id }] } },
         {
-          $match: { $or: [{ from: loggedUser._id }, { to: loggedUser._id }] },
+          $group: { _id: { $cond: [{ $eq: ["$from", loggedUser._id] }, "$to", "$from"] } },
         },
-        {
-          $group: {
-            _id: { $cond: [{ $eq: ["$from", loggedUser._id] }, "$to", "$from"] },
-          },
-        },
-        {
-          $project: { _id: 1 },
-        },
+        { $project: { _id: 1 } },
       ]);
 
       const ids = userIds.map((user) => user._id);
 
-      const usersWithMessages = await UserModel.find({ _id: { $in: ids } }); // Selecione os campos que você deseja retornar
+      const lastMessages = await MessageModel.aggregate([
+        {
+          $match: {
+            $or: [
+              { from: loggedUser._id, to: { $in: ids } },
+              { to: loggedUser._id, from: { $in: ids } },
+            ],
+          },
+        },
+        { $sort: { _id: -1 } },
+        {
+          $group: {
+            _id: { $cond: [{ $eq: ["$from", loggedUser._id] }, "$to", "$from"] },
+            lastMessageId: { $first: "$_id" },
+          },
+        },
+        { $sort: { lastMessageId: -1 } },
+      ]);
+
+      const sortedIds = lastMessages.map((msg) => msg._id.toString());
+
+      const users = await UserModel.find({ _id: { $in: ids } });
+
+      const usersWithMessages = sortedIds.map((id) =>
+        users.find((user) => user._id.toString() === id)
+      );
 
       return res.status(200).json({ success: true, data: usersWithMessages });
     } catch (error: any) {
