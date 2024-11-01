@@ -130,4 +130,31 @@ export default class MessageController {
       });
     }
   };
+
+  static markMessagesAsSeen = async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const loggedUser = req.loggedUser;
+      const { id } = req.params;
+
+      if (!loggedUser || !loggedUser._id) {
+        return res.status(400).json({ success: false, message: "Usuário não autenticado." });
+      }
+
+      const result = await MessageModel.updateMany(
+        { to: loggedUser._id, from: id, seen: false },
+        { $set: { seen: true } }
+      );
+
+      return res.status(200).json({
+        success: true,
+        message: `${result.modifiedCount} mensagens foram marcadas como visualizadas.`,
+      });
+    } catch (error: any) {
+      return res.status(500).json({
+        success: false,
+        message: "Erro ao marcar mensagens como visualizadas.",
+        error: error.message,
+      });
+    }
+  };
 }

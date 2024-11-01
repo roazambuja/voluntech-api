@@ -9,4 +9,5 @@ export default [
   router.get("/user", checkToken, MessageController.getUserConversations),
   router.get("/user/unread", checkToken, MessageController.hasUnreadMessages),
   router.get("/:id", checkToken, MessageController.getMessages),
+  router.put("/user/:id", checkToken, MessageController.markMessagesAsSeen),
 ];
