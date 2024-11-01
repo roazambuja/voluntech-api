@@ -7,5 +7,6 @@ const router = Router();
 export default [
   router.post("/", checkToken, MessageController.sendMessage),
   router.get("/user", checkToken, MessageController.getUserConversations),
+  router.get("/user/unread", checkToken, MessageController.hasUnreadMessages),
   router.get("/:id", checkToken, MessageController.getMessages),
 ];

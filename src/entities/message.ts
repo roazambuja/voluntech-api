@@ -6,4 +6,5 @@ export interface Message {
   content: string;
   to: User | Organization;
   from: User | Organization;
+  seen: boolean;
 }

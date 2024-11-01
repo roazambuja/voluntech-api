@@ -110,4 +110,24 @@ export default class MessageController {
       });
     }
   };
+
+  static hasUnreadMessages = async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const loggedUser = req.loggedUser;
+
+      if (!loggedUser || !loggedUser._id) {
+        return res.status(400).json({ success: false, message: "Usuário não autenticado." });
+      }
+
+      const hasUnreadMessages = await MessageModel.exists({ to: loggedUser._id, seen: false });
+
+      return res.status(200).json({ success: true, hasUnreadMessages: !!hasUnreadMessages });
+    } catch (error: any) {
+      return res.status(500).json({
+        success: false,
+        message: "Erro ao verificar mensagens não vistas.",
+        error: error.message,
+      });
+    }
+  };
 }
