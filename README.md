@@ -8,25 +8,34 @@ O projeto consiste no back-end, em forma de API Rest, de uma aplicação Web que
 
 A aplicação Voluntech é um projeto desenvolvido como Trabalho de Conclusão de Curso, requisito para obtenção do título de Tecnólogo em Sistemas para Internet no IFSul Campus Charqueadas.
 
-## :gear:	Como executar
+## :gear: Como executar
+
 ### 1. Clonar o repositório
+
 ```
 git clone https://github.com/roazambuja/voluntech-api.git
 ```
+
 ### 2. Instalar as dependências
+
 Rodar o comando `npm install` no diretório do projeto.
 
 ### 2. Criar o arquivo .env
-Crie na raiz do projeto um arquivo chamado `.env` e configure as variáveis de ambiente definidas no arquivo `.env.sample`. Não esqueça de alterar os dados para as suas informações, principalmente a URL do banco de dados.
+
+Crie na raiz do projeto um arquivo chamado `.env` e configure as variáveis de ambiente definidas no arquivo `.env.sample`. Não esqueça de alterar os dados para as suas informações, principalmente a URL do banco de dados. Também é necessário criar uma conta no [Cloudinary](https://cloudinary.com/) para preencher os dados da API.
 
 ### 3. Iniciar o servidor
-Rodar o comando `npm run dev`. 
 
-## :hammer_and_wrench:	Tecnologias utilizadas
+Rodar o comando `npm run dev`.
+
+## :hammer_and_wrench: Tecnologias utilizadas
+
 - [NodeJS](https://nodejs.org/en)
 - [TypeScript](https://www.typescriptlang.org/)
 - [Express](https://expressjs.com/)
 - [MongoDB](https://www.mongodb.com/)
+- [Cloudinary](https://cloudinary.com/)
 
-## :open_file_folder:	Links úteis
+## :open_file_folder: Links úteis
+
 - [Repositório Front-end](https://github.com/roazambuja/voluntech)
