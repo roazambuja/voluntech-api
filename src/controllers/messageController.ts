@@ -2,6 +2,24 @@ import { Response } from "express";
 import MessageModel from "../models/message";
 import { AuthenticatedRequest } from "../middlewares/token";
 import UserModel from "../models/user";
+import crypto from "crypto";
+
+function encryptContent(content: string): string {
+  const iv = crypto.randomBytes(16);
+  const cipher = crypto.createCipheriv("aes-256-cbc", Buffer.from(process.env.SECRET_KEY!), iv);
+  let encrypted = cipher.update(content, "utf-8", "hex");
+  encrypted += cipher.final("hex");
+  return `${iv.toString("hex")}:${encrypted}`;
+}
+
+function decryptContent(encryptedContent: string): string {
+  const [ivHex, encrypted] = encryptedContent.split(":");
+  const iv = Buffer.from(ivHex, "hex");
+  const decipher = crypto.createDecipheriv("aes-256-cbc", Buffer.from(process.env.SECRET_KEY!), iv);
+  let decrypted = decipher.update(encrypted, "hex", "utf-8");
+  decrypted += decipher.final("utf-8");
+  return decrypted;
+}
 
 export default class MessageController {
   static sendMessage = async (req: AuthenticatedRequest, res: Response) => {
@@ -9,10 +27,12 @@ export default class MessageController {
       const { to, content } = req.body;
       const from = req.loggedUser;
 
+      const encryptedContent = encryptContent(content);
+
       const newMessage = new MessageModel({
         to,
         from,
-        content,
+        content: encryptedContent,
       });
 
       await newMessage.save();
@@ -22,16 +42,16 @@ export default class MessageController {
         message: "Mensagem enviada com sucesso!",
         data: newMessage,
       });
-    } catch (error: any) {
+    } catch (error) {
       return res.status(500).json({
         success: false,
         message: "Erro ao enviar a mensagem.",
-        error: error.message,
+        error: (error as Error).message,
       });
     }
   };
 
-  static getMessages = async (req: AuthenticatedRequest, res: Response) => {
+  static getMessages = async (req: AuthenticatedRequest, res: Response): Promise<Response> => {
     try {
       const { id } = req.params;
       const from = req.loggedUser;
@@ -40,15 +60,31 @@ export default class MessageController {
         $or: [{ $and: [{ to: id }, { from }] }, { $and: [{ to: from }, { from: id }] }],
       }).populate("from");
 
-      return res.status(200).json({
-        success: true,
-        data: messages,
+      const decryptedMessages = messages.map((message) => {
+        if (message.to._id && from && from._id && message.from._id) {
+          if (
+            message.to._id.toString() === from._id.toString() ||
+            message.from._id.toString() === from._id.toString()
+          ) {
+            return {
+              ...message.toObject(),
+              content: decryptContent(message.content),
+            };
+          } else {
+            return res.status(403).json({
+              success: false,
+              message: "Você não possui permissão para listar as mensagens!",
+            });
+          }
+        }
+        return message;
       });
-    } catch (error: any) {
+      return res.status(200).json({ success: true, data: decryptedMessages });
+    } catch (error) {
       return res.status(500).json({
         success: false,
         message: "Erro ao buscar as mensagens.",
-        error: error.message,
+        error: (error as Error).message,
       });
     }
   };
