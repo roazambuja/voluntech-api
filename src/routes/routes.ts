@@ -11,6 +11,7 @@ import followRoutes from "./followRoutes";
 import updatesRoutes from "./updatesRoutes";
 import participationRoutes from "./participationRoutes";
 import postRoutes from "./postRoutes";
+import messageRoutes from "./messageRoutes";
 
 const router: IRouter = Router();
 
@@ -26,5 +27,6 @@ router.use("/follow", followRoutes);
 router.use("/updates", updatesRoutes);
 router.use("/participation", participationRoutes);
 router.use("/post", postRoutes);
+router.use("/message", messageRoutes);
 
 export default router;
